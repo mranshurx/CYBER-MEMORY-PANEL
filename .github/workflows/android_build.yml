@@ -5,6 +5,7 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,29 +20,22 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+        cache: 'gradle'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        api-level: 36
-        build-tools: 36.0.0
-        cmake: 3.22.1
+    - name: Set execute permission for Gradle Wrapper
+      run: chmod +x gradlew
 
-    - name: Accept Android SDK licenses
-      run: yes | sdkmanager --licenses || true
-
-    - name: Generate and setup Gradle wrapper
+    - name: Accept Android SDK licenses & Install CMake
       run: |
-        if [ ! -f ./gradlew ]; then
-          gradle wrapper
-        fi
-        chmod +x ./gradlew
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "cmake;3.22.1" || true
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: shizuku-injector-debug
+        name: shizuku-art-injector-debug
         path: app/build/outputs/apk/debug/*.apk
+        if-no-files-found: error

@@ -25,10 +25,22 @@ jobs:
     - name: Set execute permission for Gradle Wrapper
       run: chmod +x gradlew
 
-    - name: Accept Android SDK licenses & Install CMake
+    - name: Accept Android SDK licenses & Install Components
       run: |
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "cmake;3.22.1" || true
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "cmake;3.22.1" "platform-tools" || true
+
+    - name: Prepare Keystore & Environment
+      run: |
+        if [ ! -f .env ] && [ -f .env.example ]; then
+          cp .env.example .env
+        fi
+        if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
+          base64 -d debug.keystore.base64 > debug.keystore
+        fi
+        if [ ! -f debug.keystore ]; then
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        fi
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug --stacktrace

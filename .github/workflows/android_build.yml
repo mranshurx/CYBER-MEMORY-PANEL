@@ -23,7 +23,9 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        items: platform-tools,platforms;android-36,build-tools;36.0.0,cmake;3.22.1
+        api-level: 36
+        build-tools: 36.0.0
+        cmake: 3.22.1
 
     - name: Accept Android SDK licenses
       run: yes | sdkmanager --licenses || true

@@ -1,0 +1,6 @@
+{
+  "name": "Shizuku ART Injector",
+  "description": "Prototype Android application using Shizuku and NDK/C++ to invoke app_process and inject ART hooking libraries into target apps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
